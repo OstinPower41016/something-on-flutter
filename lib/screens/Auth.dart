@@ -1,8 +1,45 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class Auth extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:learn_basic/utils/getUserData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+
+void saveUserData(String phoneNumber, String name, BuildContext context) async {
+  if (phoneNumber.trim() != "" && name.trim() != "") {
+    await setUserData({"phoneNumber": phoneNumber, "name": name});
+    context.go("/");
+  }
+}
+
+
+class Auth extends StatefulWidget {
+  @override
+  State<Auth> createState() => _AuthState();
+}
+
+class _AuthState extends State<Auth> {
+  String phoneNumber = "";
+  String name = "";
+  
+  onChangeName(String text) {
+     setState(() {
+      name = text;
+    });
+  }
+
+  onChangePhoneNumber(String text) {
+    setState(() {
+      phoneNumber = text;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       appBar: AppBar(title: const Text("Authenticated")),
       body: Center(
@@ -12,6 +49,8 @@ class Auth extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
+                onChanged: onChangeName,
+                initialValue: name,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: "Enter your Name"
@@ -19,17 +58,20 @@ class Auth extends StatelessWidget {
               ),
               const SizedBox(height: 16),
                TextFormField(
+                onChanged: onChangePhoneNumber,
+                initialValue: phoneNumber,
+                keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: "Enter your phone"
                 ),
               ),
               const SizedBox(height: 32),
-              const SizedBox(
+                SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: null,
-                    child: Text("Confirm"),
+                    onPressed: () => saveUserData(phoneNumber, name, context),
+                    child: const Text("Confirm"),
                   ),
               )
             ],
